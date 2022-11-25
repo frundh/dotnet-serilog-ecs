@@ -21,6 +21,10 @@ public class WeatherForecastController : ControllerBase
     [HttpGet(Name = "GetWeatherForecast")]
     public IEnumerable<WeatherForecast> Get()
     {
+        //var position = new { Latitude = 25, Longitude = 134 };
+        //var elapsedMs = 34;
+        //_logger.LogInformation("Processed {@Position} in {Elapsed:000} ms.", position, elapsedMs);
+
         return Enumerable.Range(1, 5).Select(index => new WeatherForecast
         {
             Date = DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
@@ -29,7 +33,7 @@ public class WeatherForecastController : ControllerBase
         })
         .ToArray();
     }
-    
+
     [HttpDelete(Name = "DeleteWeatherForecast")]
     public void Delete()
     {
