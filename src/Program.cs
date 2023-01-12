@@ -22,22 +22,19 @@ builder.Host.ConfigureLogging((context, builder) =>
         {
             var httpAccessor = ctx.Configuration.Get<HttpContextAccessor>();
             var formatterConfig = new EcsTextFormatterConfiguration();
-
+            
             formatterConfig.MapHttpContext(httpAccessor);
             var formatter = new EcsTextFormatter(formatterConfig);
 
             config.WriteTo.Console();
             //config.WriteTo.Console(formatter);
-            config.WriteTo.Http(requestUri: "http://localhost:8088", queueLimitBytes: null, textFormatter: formatter);
+            config.WriteTo.Http(requestUri: ctx.Configuration["Logstash:Url"], queueLimitBytes: null, textFormatter: formatter);
         });
 
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+app.UseSwagger();
+app.UseSwaggerUI();
 
 app.UseAuthorization();
 app.MapControllers();

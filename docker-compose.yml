@@ -87,6 +87,16 @@ services:
     depends_on:
       - elasticsearch
 
+  app:
+    build:
+      context: .
+    ports:
+      - "5000:5000"
+    environment:
+      LOGSTASH__URL: "http://logstash:8088"
+    networks:
+      - elk
+
 networks:
   elk:
     driver: bridge
