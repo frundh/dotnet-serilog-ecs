@@ -26,8 +26,8 @@ builder.Host.ConfigureLogging((context, builder) =>
             formatterConfig.MapHttpContext(httpAccessor);
             var formatter = new EcsTextFormatter(formatterConfig);
 
-            config.WriteTo.Console();
-            //config.WriteTo.Console(formatter);
+            //config.WriteTo.Console();
+            config.WriteTo.Console(formatter);
             config.WriteTo.Http(requestUri: ctx.Configuration["Logstash:Url"], queueLimitBytes: null, textFormatter: formatter);
         });
 

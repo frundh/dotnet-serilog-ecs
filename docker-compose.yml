@@ -1,19 +1,46 @@
-version: '3.7'
+version: '3.9'
 
 services:
 
-  logstash:
+  elasticsearch:
+    #image: elasticsearch:7.17.8
+    image: elasticsearch:8.5.3
     ports:
-      - "8088:8088"
+      - "9200:9200"
+      - "9300:9300"
+    environment:
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - discovery.type=single-node
+      - xpack.security.enabled=false # disable security in 8.x.x
+
+  kibana:
+    #image: kibana:7.17.8
+    image: kibana:8.5.3
+    ports:
+      - "5601:5601"
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+
+  fluentbit:
+    image: fluent/fluent-bit:2.0.8
+    ports:
+      - "24224:24224"
+      - "24224:24224/udp"
+    volumes:
+      - ./fluentbit.conf:/fluent-bit/etc/fluent-bit.conf
+      #- ./parsers.conf:/fluent-bit/etc/parsers.conf
+
+  wait-for-fluentbit:
+    image: willwill/wait-for-it
+    command: ["fluentbit:24224"]
 
   app:
     build:
-      # When you use multiple Compose files, all paths in the files 
-      # are relative to the first configuration file specified with -f.
-      context: ../.
+      context: .
     ports:
       - "5000:5000"
-    environment:
-      LOGSTASH__URL: "http://logstash:8088"
-    networks:
-      - elk
+    depends_on:
+      wait-for-fluentbit:
+        condition: service_completed_successfully
+    logging:
+      driver: fluentd
