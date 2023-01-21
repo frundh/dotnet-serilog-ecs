@@ -1,0 +1,19 @@
+version: '3.7'
+
+services:
+
+  logstash:
+    ports:
+      - "8088:8088"
+
+  app:
+    build:
+      # When you use multiple Compose files, all paths in the files 
+      # are relative to the first configuration file specified with -f.
+      context: ../.
+    ports:
+      - "5000:5000"
+    environment:
+      LOGSTASH__URL: "http://logstash:8088"
+    networks:
+      - elk
